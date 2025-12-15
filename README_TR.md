@@ -78,12 +78,11 @@ docker compose up --build
 # docker compose up --build -d
 ```
 *   Terminalde loglar akmaya başladığında işlem tamamdır.
-*   Logları durdurmak için `Ctrl+C` yapabilirsiniz (Container kapanır).
 *   **Görsel Erişim:** Tarayıcıdan [http://localhost:6081/vnc.html](http://localhost:6081/vnc.html) adresine gidin (Şifre: `123456`).
 *   **⏳ Sabırlı Olun:** Docker kurulumu tamamlanma aşamasıyla birlikte, siyah ekrandan MetaTrader 5 ekranına geçiş işlemi (ilk kurulum nedeniyle) **25-30 dakika** sürebilir. Lütfen kapatmadan bekleyiniz.
 *   **İlk İşlem:** VNC ekranında MT5 açılınca, **File > Open an Account** diyerek Broker'ınızı aratın ve bir kez manuel giriş yapın.
 
-*(Bu terminal penceresini açık bırakın veya yeni bir terminal sekmesi açın)*
+*(Bu terminal penceresini açık bırakın ve yeni bir terminal sekmesi açın)*
 
 ### 4. Python İstemcisini Kurma
 
