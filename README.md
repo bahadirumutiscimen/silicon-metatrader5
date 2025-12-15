@@ -77,12 +77,11 @@ docker compose up --build
 # docker compose up --build -d
 ```
 *   The process is complete when logs start flowing in the terminal.
-*   You can press `Ctrl+C` to stop logs (Container shuts down).
 *   **Visual Access:** Go to [http://localhost:6081/vnc.html](http://localhost:6081/vnc.html) in your browser (Password: `123456`).
 *   **⏳ Be Patient:** Along with the Docker installation phase, the transition from the black screen to the MetaTrader 5 screen (due to initial setup) may take **25-30 minutes**. Please wait without closing it.
 *   **First Action:** When MT5 opens on the VNC screen, go to **File > Open an Account**, search for your Broker, and log in manually once.
 
-*(Leave this terminal window open or open a new terminal tab)*
+*(Leave this terminal window open and open a new terminal tab)*
 
 ### 4. Installing Python Client
 
