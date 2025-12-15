@@ -1,0 +1,27 @@
+services:
+  siliconmt5:
+    build: .
+    platform: linux/amd64
+    container_name: siliconmt5
+    environment:
+      - MT5_HOST=0.0.0.0
+      - VNC_PWD=123456
+      - TZ=Europe/Istanbul
+      - WINEDEBUG=-all
+    ports:
+      - 5901:5901
+      - 6081:6081
+      - 8001:8001
+    restart: "no"
+    init: true
+    stdin_open: true
+    tty: true
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+    volumes:
+      - mt5_persistence:/opt/wineprefix/drive_c/Program Files/MetaTrader 5
+
+volumes:
+  mt5_persistence:
