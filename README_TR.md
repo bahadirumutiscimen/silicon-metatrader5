@@ -74,14 +74,14 @@ colima start --arch x86_64 --vm-type=qemu --cpu 4 --memory 8
 
 ```bash
 cd docker
-
-# Konteyneri başlat (İlk kurulumda 5-10 dk sürebilir)
+```
+# Konteyneri başlat (İlk kurulumda 25-30 dk sürebilir)
 ```bash
 # Seçenek 1: Logları görerek başlatma (Önerilen - Sorun varsa görürsünüz)
 docker compose up --build
 
 # Seçenek 2: Arka planda sessiz başlatma (Sistem oturduktan sonra)
-# docker compose up --build -d
+docker compose up --build -d
 ```
 *   Terminalde loglar akmaya başladığında işlem tamamdır.
 *   **Görsel Erişim:** Tarayıcıdan [http://localhost:6081/vnc.html](http://localhost:6081/vnc.html) adresine gidin (Şifre: `123456`).
