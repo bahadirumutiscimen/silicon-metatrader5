@@ -75,12 +75,11 @@ colima start --arch x86_64 --vm-type=qemu --cpu 4 --memory 8
 ```bash
 cd docker
 
-# Start the container (May take 5-10 mins on first install)
 # Option 1: Start seeing logs (Recommended - You see if there is a problem)
 docker compose up --build
 
 # Option 2: Silent start in background (After system is settled)
-# docker compose up --build -d
+docker compose up --build -d
 ```
 *   The process is complete when logs start flowing in the terminal.
 *   **Visual Access:** Go to [http://localhost:6081/vnc.html](http://localhost:6081/vnc.html) in your browser (Password: `123456`).
