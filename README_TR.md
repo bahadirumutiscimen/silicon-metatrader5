@@ -12,9 +12,15 @@ Bu proje, macOS Silicon cihazlarda MetaTrader 5'i sorunsuz çalıştırmak (`doc
 > Bu altyapı, macOS ortamında **strateji geliştirme, backtest ve forward-test** süreçlerinizi konforla yönetmeniz için tasarlanmıştır.
 >
 > Kritik öneme sahip, milisaniye hassasiyeti gerektiren veya yüksek sermayeli **Canlı (Production)** işlemleriniz için; emülasyon katmanı içermeyen, doğal Windows altyapısına sahip bir Fiziksel PC veya Sunucu kiralanması tavsiye edilir.
-
 ---
+## 🛑 Karşılaşılan Zorluklar ve Çözümleri
+Bu proje, macOS Silicon üzerinde x86 uygulaması çalıştırmanın zorluklarını aşmak için özel olarak tasarlanmıştır.
 
+1.  **Architecture Mismatch:** Mac'in Rosetta 2'si yerine **QEMU** tabanlı tam x86_64 emülasyonu (Colima) kullanılarak çökme sorunları çözülmüştür.
+2.  **IPC Timeout:** Emülasyonun doğal yavaşlığı nedeniyle Python bağlantılarında kopmalar yaşanabilir. Bu yüzden kodlarımızda özel "Retry" (tekrar deneme) mekanizmaları bulunur.
+3.  **SSL/TLS:** Wine ortamına `winbind` ve sertifika kütüphaneleri eklenerek broker sunucularıyla güvenli iletişim sağlanmıştır.
+4.  **Grafik Bağımsızlık (No-Chart Data):** Çoğu alternatif çözüm, veri almak için her pariteye indikatör (EA) eklemenizi ve o grafiği açık tutmanızı gerektirir. Bu projedeki yapı sayesinde, **grafik açma zorunluluğu olmadan** dilediğiniz sembolden arka planda anlık veri çekebilir, yüzlerce pariteyi saniyeler içinde tarayabilirsiniz.
+---
 ## 📂 Proje Yapısı
 
 *   **`docker/`**: MT5'i çalıştıran sanallaştırılmış ortam (Wine + QEMU).
@@ -148,13 +154,6 @@ colima start --arch x86_64 --vm-type=qemu --cpu 4 --memory 8
 ```
 
 ---
-
-## 🛑 Karşılaşılan Zorluklar ve Çözümleri
-Bu proje, macOS Silicon üzerinde x86 uygulaması çalıştırmanın zorluklarını aşmak için özel olarak tasarlanmıştır.
-
-1.  **Architecture Mismatch:** Mac'in Rosetta 2'si yerine **QEMU** tabanlı tam x86_64 emülasyonu (Colima) kullanılarak çökme sorunları çözülmüştür.
-2.  **IPC Timeout:** Emülasyonun doğal yavaşlığı nedeniyle Python bağlantılarında kopmalar yaşanabilir. Bu yüzden kodlarımızda özel "Retry" (tekrar deneme) mekanizmaları bulunur.
-3.  **SSL/TLS:** Wine ortamına `winbind` ve sertifika kütüphaneleri eklenerek broker sunucularıyla güvenli iletişim sağlanmıştır.
 
 ## ⚙️ Gelişmiş Ayarlar (Timezone & Ekran)
 
