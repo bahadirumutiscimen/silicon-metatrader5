@@ -71,12 +71,11 @@ colima start --arch x86_64 --vm-type=qemu --cpu 4 --memory 8
 ```
 
 ### 3. MT5 Sunucusunu Kurma
+# Konteyneri başlat (İlk kurulumda 25-30 dk sürebilir)
 
 ```bash
 cd docker
-```
-# Konteyneri başlat (İlk kurulumda 25-30 dk sürebilir)
-```bash
+
 # Seçenek 1: Logları görerek başlatma (Önerilen - Sorun varsa görürsünüz)
 docker compose up --build
 
