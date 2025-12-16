@@ -12,9 +12,15 @@ This project is an end-to-end solution developed to run MetaTrader 5 seamlessly 
 > This infrastructure is designed to manage your **strategy development, backtesting, and forward-testing** processes with comfort in the macOS environment.
 >
 > For **Live (Production)** trading that requires milliseconds precision, is critical, or involves high capital, it is recommended to rent a Physical PC or Server with a native Windows infrastructure that does not contain an emulation layer.
-
 ---
+## 🛑 Challenges Encountered and Solutions
+This project is specially designed to overcome the challenges of running x86 applications on macOS Silicon.
 
+1.  **Architecture Mismatch:** Crash issues were solved by using **QEMU** based full x86_64 emulation (Colima) instead of Mac's Rosetta 2.
+2.  **IPC Timeout:** Disconnections in Python connections may occur due to the natural slowness of emulation. Therefore, our codes contain special "Retry" mechanisms.
+3.  **SSL/TLS:** Secure communication with broker servers was ensured by adding `winbind` and certificate libraries to the Wine environment.
+4.  **Chart Independence (No-Chart Data):** Most alternative solutions require adding an indicator (EA) to each pair and keeping that chart open to fetch data. Thanks to the architecture of this project, you can fetch real-time data from any symbol in the background **without the obligation to open charts**, allowing you to scan hundreds of pairs in seconds.
+---
 ## 📂 Project Structure
 
 *   **`docker/`**: Virtualized environment running MT5 (Wine + QEMU).
@@ -24,7 +30,7 @@ This project is an end-to-end solution developed to run MetaTrader 5 seamlessly 
     *   *All functions and command structure remain 100% faithful to the original `MetaTrader5` Python library. You can use your existing codes without changing them.*
 *   **`tests/`**: Test files.
     *   *These files are used to verify that the Python library communicating with MT5 is working correctly.*
-
+---
 ## 🏗 System Workflow Diagram
 
 ![System Architecture](assets/system-arch.png)
@@ -147,13 +153,6 @@ colima start --arch x86_64 --vm-type=qemu --cpu 4 --memory 8
 ```
 
 ---
-
-## 🛑 Challenges Encountered and Solutions
-This project is specially designed to overcome the challenges of running x86 applications on macOS Silicon.
-
-1.  **Architecture Mismatch:** Crash issues were solved by using **QEMU** based full x86_64 emulation (Colima) instead of Mac's Rosetta 2.
-2.  **IPC Timeout:** Disconnections in Python connections may occur due to the natural slowness of emulation. Therefore, our codes contain special "Retry" mechanisms.
-3.  **SSL/TLS:** Secure communication with broker servers was ensured by adding `winbind` and certificate libraries to the Wine environment.
 
 ## ⚙️ Advanced Settings (Timezone & Screen)
 
