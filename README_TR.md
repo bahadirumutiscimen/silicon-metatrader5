@@ -198,6 +198,15 @@ C: Colima zaten çalışıyorsa iki seçeneğiniz vardır:
 *   **Güncelleyerek Başlatma:** Eğer bir ayar değiştirdiyseniz veya emin değilseniz (Önerilen):
     `cd docker && docker compose up --build`
 
+**S: Veri çekimi neden 5000 bar ile sınırlı?**  
+C: Bu limit MT5 yapılandırma dosyasından gelir. `mt5cfg.ini` içinde `MaxBars` değerini artırın:
+- `MaxBars=500000` *(veya `MaxBars=100000`)*
+- 
+Sonra değişikliğin geçerli olması için MT5 Docker’ı **build alarak** yeniden başlatın:
+```bash
+docker compose up --build
+```
+
 **S: MT5 ekranı siyah kalıyor?**
 C: Colima'nın QEMU modunda başlatıldığından emin olun (Adım 2'deki komut).
 
