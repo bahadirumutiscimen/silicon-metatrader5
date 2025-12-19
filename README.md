@@ -197,7 +197,14 @@ A: If Colima is already running, you have two options:
     `cd docker && docker compose up`
 *   **Update Start:** If you changed a setting or are unsure (Recommended):
     `cd docker && docker compose up --build`
-
+    
+**Q: Data fetching is limited to 5000 bars, why?**  
+A: This limit comes from the MT5 configuration file. Increase the value in `mt5cfg.ini`:
+- `MaxBars=500000` *(or `MaxBars=100000`)*
+Then restart MT5 Docker with a rebuild so the change takes effect:
+```bash
+docker compose up --build
+```
 **Q: MT5 screen stays black?**
 A: Make sure Colima is started in QEMU mode (Command in Step 2).
 
