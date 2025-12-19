@@ -201,7 +201,7 @@ C: Colima zaten çalışıyorsa iki seçeneğiniz vardır:
 **S: Veri çekimi neden 5000 bar ile sınırlı?**  
 C: Bu limit MT5 yapılandırma dosyasından gelir. `mt5cfg.ini` içinde `MaxBars` değerini artırın:
 - `MaxBars=500000` *(veya `MaxBars=100000`)*
-- 
+  
 Sonra değişikliğin geçerli olması için MT5 Docker’ı **build alarak** yeniden başlatın:
 ```bash
 docker compose up --build
