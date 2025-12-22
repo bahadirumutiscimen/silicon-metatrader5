@@ -12,15 +12,31 @@ This project is an end-to-end solution developed to run MetaTrader 5 seamlessly 
 > This infrastructure is designed to manage your **strategy development, backtesting, and forward-testing** processes with comfort in the macOS environment.
 >
 > For **Live (Production)** trading that requires milliseconds precision, is critical, or involves high capital, it is recommended to rent a Physical PC or Server with a native Windows infrastructure that does not contain an emulation layer.
----
-## 🛑 Challenges Encountered and Solutions
-This project is specially designed to overcome the challenges of running x86 applications on macOS Silicon.
 
-1.  **Architecture Mismatch:** Crash issues were solved by using **QEMU** based full x86_64 emulation (Colima) instead of Mac's Rosetta 2.
-2.  **IPC Timeout:** Disconnections in Python connections may occur due to the natural slowness of emulation. Therefore, our codes contain special "Retry" mechanisms.
-3.  **SSL/TLS:** Secure communication with broker servers was ensured by adding `winbind` and certificate libraries to the Wine environment.
-4.  **Chart Independence (No-Chart Data):** Most alternative solutions require adding an indicator (EA) to each pair and keeping that chart open to fetch data. Thanks to the architecture of this project, you can fetch real-time data from any symbol in the background **without the obligation to open charts**, allowing you to scan hundreds of pairs in seconds.
+> [!WARNING]
+> **MetaTrader5-Originated Known Issues**
+>
+> Due to the internal behavior of the MetaTrader5 application, some MT5 Python functions may return stale data when using datetime-based queries:
+>
+> | Method | Expected | Actual | Status |
+> |--------|----------|--------|--------|
+> | `copy_rates_from_pos()` | Current data | ✅ Current data | **Recommended** |
+> | `copy_rates_from()` | Current data | ❌ Stale data (1-3 hours behind) | Not recommended |
+> | `copy_rates_range()` | Current data | ❌ Stale data (1-3 hours behind) | Not recommended |
+>
+> **Root Cause:** The MetaTrader5 terminal application caches datetime-based data requests internally. Position-based requests (`copy_rates_from_pos`) always reference "bar 0" which is the current live bar, bypassing the MT5 cache.
+>
+> **Best Practice:** Always use `copy_rates_from_pos()` with a sufficient bar count:
+> ```python
+> # ✅ Correct - Always returns current data
+> rates = mt5.copy_rates_from_pos("EURUSD", mt5.TIMEFRAME_M5, 0, 500)
+>
+> # ❌ Avoid - May return stale data due to MT5 caching
+> rates = mt5.copy_rates_range("EURUSD", mt5.TIMEFRAME_M5, dt_from, dt_to)
+> ```
+
 ---
+
 ## 📂 Project Structure
 
 *   **`docker/`**: Virtualized environment running MT5 (Wine + QEMU).
@@ -30,7 +46,7 @@ This project is specially designed to overcome the challenges of running x86 app
     *   *All functions and command structure remain 100% faithful to the original `MetaTrader5` Python library. You can use your existing codes without changing them.*
 *   **`tests/`**: Test files.
     *   *These files are used to verify that the Python library communicating with MT5 is working correctly.*
----
+
 ## 🏗 System Workflow Diagram
 
 ![System Architecture](assets/system-arch.png)
@@ -56,7 +72,7 @@ Open the terminal and run the following command to install the necessary tools:
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 # 2. Install necessary packages:
-brew install colima docker qemu lima lima-additional-guestagents
+brew install colima docker qemu lima
 ```
 
 ### 2. Starting the Engine
@@ -75,18 +91,20 @@ colima start --arch x86_64 --vm-type=qemu --cpu 4 --memory 8
 ```bash
 cd docker
 
+# Start the container (May take 5-10 mins on first install)
 # Option 1: Start seeing logs (Recommended - You see if there is a problem)
 docker compose up --build
 
 # Option 2: Silent start in background (After system is settled)
-docker compose up --build -d
+# docker compose up --build -d
 ```
 *   The process is complete when logs start flowing in the terminal.
+*   You can press `Ctrl+C` to stop logs (Container shuts down).
 *   **Visual Access:** Go to [http://localhost:6081/vnc.html](http://localhost:6081/vnc.html) in your browser (Password: `123456`).
 *   **⏳ Be Patient:** Along with the Docker installation phase, the transition from the black screen to the MetaTrader 5 screen (due to initial setup) may take **25-30 minutes**. Please wait without closing it.
 *   **First Action:** When MT5 opens on the VNC screen, go to **File > Open an Account**, search for your Broker, and log in manually once.
 
-*(Leave this terminal window open and open a new terminal tab)*
+*(Leave this terminal window open or open a new terminal tab)*
 
 ### 4. Installing Python Client
 
@@ -153,6 +171,13 @@ colima start --arch x86_64 --vm-type=qemu --cpu 4 --memory 8
 
 ---
 
+## 🛑 Challenges Encountered and Solutions
+This project is specially designed to overcome the challenges of running x86 applications on macOS Silicon.
+
+1.  **Architecture Mismatch:** Crash issues were solved by using **QEMU** based full x86_64 emulation (Colima) instead of Mac's Rosetta 2.
+2.  **IPC Timeout:** Disconnections in Python connections may occur due to the natural slowness of emulation. Therefore, our codes contain special "Retry" mechanisms.
+3.  **SSL/TLS:** Secure communication with broker servers was ensured by adding `winbind` and certificate libraries to the Wine environment.
+
 ## ⚙️ Advanced Settings (Timezone & Screen)
 
 ### 🌍 Changing Timezone
@@ -197,14 +222,7 @@ A: If Colima is already running, you have two options:
     `cd docker && docker compose up`
 *   **Update Start:** If you changed a setting or are unsure (Recommended):
     `cd docker && docker compose up --build`
-    
-**Q: Data fetching is limited to 5000 bars, why?**  
-A: This limit comes from the MT5 configuration file. Increase the value in `mt5cfg.ini`:
-- `MaxBars=500000` *(or `MaxBars=100000`)*
-Then restart MT5 Docker with a rebuild so the change takes effect:
-```bash
-docker compose up --build
-```
+
 **Q: MT5 screen stays black?**
 A: Make sure Colima is started in QEMU mode (Command in Step 2).
 
