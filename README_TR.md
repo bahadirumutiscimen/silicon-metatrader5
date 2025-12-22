@@ -1,5 +1,5 @@
 # SiliconMetaTrader5 🍏📈
-**MetaTrader 5 Solution for macOS Silicon (M1/M2/M3)**
+**Professional MetaTrader 5 Solution for macOS Silicon (M1/M2/M3)**
 
 🌍 **[Read in English](README.md)**
 
@@ -12,15 +12,31 @@ Bu proje, macOS Silicon cihazlarda MetaTrader 5'i sorunsuz çalıştırmak (`doc
 > Bu altyapı, macOS ortamında **strateji geliştirme, backtest ve forward-test** süreçlerinizi konforla yönetmeniz için tasarlanmıştır.
 >
 > Kritik öneme sahip, milisaniye hassasiyeti gerektiren veya yüksek sermayeli **Canlı (Production)** işlemleriniz için; emülasyon katmanı içermeyen, doğal Windows altyapısına sahip bir Fiziksel PC veya Sunucu kiralanması tavsiye edilir.
----
-## 🛑 Karşılaşılan Zorluklar ve Çözümleri
-Bu proje, macOS Silicon üzerinde x86 uygulaması çalıştırmanın zorluklarını aşmak için özel olarak tasarlanmıştır.
 
-1.  **Architecture Mismatch:** Mac'in Rosetta 2'si yerine **QEMU** tabanlı tam x86_64 emülasyonu (Colima) kullanılarak çökme sorunları çözülmüştür.
-2.  **IPC Timeout:** Emülasyonun doğal yavaşlığı nedeniyle Python bağlantılarında kopmalar yaşanabilir. Bu yüzden kodlarımızda özel "Retry" (tekrar deneme) mekanizmaları bulunur.
-3.  **SSL/TLS:** Wine ortamına `winbind` ve sertifika kütüphaneleri eklenerek broker sunucularıyla güvenli iletişim sağlanmıştır.
-4.  **Grafik Bağımsızlık (No-Chart Data):** Çoğu alternatif çözüm, veri almak için her pariteye indikatör (EA) eklemenizi ve o grafiği açık tutmanızı gerektirir. Bu projedeki yapı sayesinde, **grafik açma zorunluluğu olmadan** dilediğiniz sembolden arka planda anlık veri çekebilir, yüzlerce pariteyi saniyeler içinde tarayabilirsiniz.
+> [!WARNING]
+> **MetaTrader5 Kaynaklı Bilinen Sorunlar**
+>
+> MetaTrader5 uygulamasının iç davranışı nedeniyle, tarih tabanlı sorgular kullanıldığında bazı MT5 Python fonksiyonları eski veri döndürebilmektedir:
+>
+> | Yöntem | Beklenen | Gerçek | Durum |
+> |--------|----------|--------|--------|
+> | `copy_rates_from_pos()` | Güncel veri | ✅ Güncel veri | **Önerilen** |
+> | `copy_rates_from()` | Güncel veri | ❌ Eski veri (1-3 saat geride) | Önerilmez |
+> | `copy_rates_range()` | Güncel veri | ❌ Eski veri (1-3 saat geride) | Önerilmez |
+>
+> **Temel Neden:** MetaTrader5 terminal uygulaması, tarih tabanlı veri isteklerini dahili olarak cache'lemektedir. Pozisyon tabanlı istekler (`copy_rates_from_pos`) her zaman "bar 0" yani canlı güncel bar'ı referans aldığı için MT5 cache'ini atlatmaktadır.
+>
+> **En İyi Uygulama:** Her zaman yeterli bar sayısı ile `copy_rates_from_pos()` kullanın:
+> ```python
+> # ✅ Doğru - Her zaman güncel veri döner
+> rates = mt5.copy_rates_from_pos("EURUSD", mt5.TIMEFRAME_M5, 0, 500)
+>
+> # ❌ Kaçının - MT5 cache nedeniyle eski veri dönebilir
+> rates = mt5.copy_rates_range("EURUSD", mt5.TIMEFRAME_M5, dt_from, dt_to)
+> ```
+
 ---
+
 ## 📂 Proje Yapısı
 
 *   **`docker/`**: MT5'i çalıştıran sanallaştırılmış ortam (Wine + QEMU).
@@ -56,7 +72,7 @@ Terminali açın ve aşağıdaki komutu çalıştırarak gerekli araçları kuru
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 # 2. Gerekli paketleri yükleyin:
-brew install colima docker qemu lima lima-additional-guestagents
+brew install colima docker qemu lima
 ```
 
 ### 2. Motoru Başlatma
@@ -75,18 +91,21 @@ colima start --arch x86_64 --vm-type=qemu --cpu 4 --memory 8
 ```bash
 cd docker
 
+# Konteyneri başlat (İlk kurulumda 5-10 dk sürebilir)
+```bash
 # Seçenek 1: Logları görerek başlatma (Önerilen - Sorun varsa görürsünüz)
 docker compose up --build
 
 # Seçenek 2: Arka planda sessiz başlatma (Sistem oturduktan sonra)
-docker compose up --build -d
+# docker compose up --build -d
 ```
 *   Terminalde loglar akmaya başladığında işlem tamamdır.
+*   Logları durdurmak için `Ctrl+C` yapabilirsiniz (Container kapanır).
 *   **Görsel Erişim:** Tarayıcıdan [http://localhost:6081/vnc.html](http://localhost:6081/vnc.html) adresine gidin (Şifre: `123456`).
 *   **⏳ Sabırlı Olun:** Docker kurulumu tamamlanma aşamasıyla birlikte, siyah ekrandan MetaTrader 5 ekranına geçiş işlemi (ilk kurulum nedeniyle) **25-30 dakika** sürebilir. Lütfen kapatmadan bekleyiniz.
 *   **İlk İşlem:** VNC ekranında MT5 açılınca, **File > Open an Account** diyerek Broker'ınızı aratın ve bir kez manuel giriş yapın.
 
-*(Bu terminal penceresini açık bırakın ve yeni bir terminal sekmesi açın)*
+*(Bu terminal penceresini açık bırakın veya yeni bir terminal sekmesi açın)*
 
 ### 4. Python İstemcisini Kurma
 
@@ -153,6 +172,13 @@ colima start --arch x86_64 --vm-type=qemu --cpu 4 --memory 8
 
 ---
 
+## 🛑 Karşılaşılan Zorluklar ve Çözümleri
+Bu proje, macOS Silicon üzerinde x86 uygulaması çalıştırmanın zorluklarını aşmak için özel olarak tasarlanmıştır.
+
+1.  **Architecture Mismatch:** Mac'in Rosetta 2'si yerine **QEMU** tabanlı tam x86_64 emülasyonu (Colima) kullanılarak çökme sorunları çözülmüştür.
+2.  **IPC Timeout:** Emülasyonun doğal yavaşlığı nedeniyle Python bağlantılarında kopmalar yaşanabilir. Bu yüzden kodlarımızda özel "Retry" (tekrar deneme) mekanizmaları bulunur.
+3.  **SSL/TLS:** Wine ortamına `winbind` ve sertifika kütüphaneleri eklenerek broker sunucularıyla güvenli iletişim sağlanmıştır.
+
 ## ⚙️ Gelişmiş Ayarlar (Timezone & Ekran)
 
 ### 🌍 Saat Dilimi (Timezone) Değiştirme
@@ -197,15 +223,6 @@ C: Colima zaten çalışıyorsa iki seçeneğiniz vardır:
     `cd docker && docker compose up`
 *   **Güncelleyerek Başlatma:** Eğer bir ayar değiştirdiyseniz veya emin değilseniz (Önerilen):
     `cd docker && docker compose up --build`
-
-**S: Veri çekimi neden 5000 bar ile sınırlı?**  
-C: Bu limit MT5 yapılandırma dosyasından gelir. `mt5cfg.ini` içinde `MaxBars` değerini artırın:
-- `MaxBars=500000` *(veya `MaxBars=100000`)*
-  
-Sonra değişikliğin geçerli olması için MT5 Docker’ı **build alarak** yeniden başlatın:
-```bash
-docker compose up --build
-```
 
 **S: MT5 ekranı siyah kalıyor?**
 C: Colima'nın QEMU modunda başlatıldığından emin olun (Adım 2'deki komut).
