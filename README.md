@@ -76,7 +76,7 @@ Open the terminal and run the following command to install the necessary tools:
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 # 2. Install necessary packages:
-brew install colima docker qemu lima
+brew install colima docker qemu lima lima-additional-guestagents
 ```
 
 ### 2. Starting the Engine
