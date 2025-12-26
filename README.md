@@ -147,6 +147,39 @@ print(df.tail())
 mt5.shutdown()
 ```
 
+### 🆕 Version 1.1.0 New Features
+
+#### Keepalive Support (For Long-Running Applications)
+If you're running a monitoring script that stays connected for hours, enable keepalive to prevent connection timeout:
+
+```python
+# For long-running monitors/bots - prevents connection timeout
+mt5 = MetaTrader5(host="localhost", port=8001, keepalive=True)
+```
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `keepalive` | `False` | Enables background thread to keep connection alive |
+
+> **Note:** If you don't specify `keepalive`, it defaults to `False`. Existing code works without changes.
+
+#### Connection Health Check
+You can now check if the connection is alive:
+
+```python
+mt5 = MetaTrader5(host="localhost", port=8001)
+
+# Check connection health
+if mt5.ping():
+    print("Connection is alive!")
+else:
+    print("Connection lost, reconnecting...")
+    mt5.initialize()
+```
+
+#### Extended Timeout
+Connection timeout increased from 5 to 10 minutes. If `keepalive=False` (default), the connection will automatically close after 10 minutes of inactivity.
+
 ---
 
 ## 🛠 Daily Usage Routine

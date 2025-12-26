@@ -148,6 +148,39 @@ print(df.tail())
 mt5.shutdown()
 ```
 
+### 🆕 Versiyon 1.1.0 Yeni Özellikler
+
+#### Keepalive Desteği (Uzun Süreli Uygulamalar İçin)
+Saatlerce bağlı kalması gereken monitor/bot scriptleri çalıştırıyorsanız, bağlantı timeout'unu önlemek için keepalive'ı aktif edin:
+
+```python
+# Uzun süreli monitor/botlar için - bağlantı timeout'unu önler
+mt5 = MetaTrader5(host="localhost", port=8001, keepalive=True)
+```
+
+| Parametre | Varsayılan | Açıklama |
+|-----------|------------|----------|
+| `keepalive` | `False` | Bağlantıyı canlı tutmak için arka plan thread'i başlatır |
+
+> **Not:** `keepalive` parametresini yazmazsanız, varsayılan olarak `False` değeri kullanılır. Mevcut kodlarınız değişiklik yapmadan çalışmaya devam eder.
+
+#### Bağlantı Sağlık Kontrolü
+Artık bağlantının canlı olup olmadığını kontrol edebilirsiniz:
+
+```python
+mt5 = MetaTrader5(host="localhost", port=8001)
+
+# Bağlantı sağlık kontrolü
+if mt5.ping():
+    print("Bağlantı canlı!")
+else:
+    print("Bağlantı kopmuş, yeniden bağlanılıyor...")
+    mt5.initialize()
+```
+
+#### Genişletilmiş Timeout
+Bağlantı timeout süresi 5 dakikadan 10 dakikaya çıkarıldı. `keepalive=False` (varsayılan) durumunda, bağlantı 10 dakika işlem yapılmazsa otomatik kapanır.
+
 ---
 
 ## 🛠 Günlük Kullanım Rutini
