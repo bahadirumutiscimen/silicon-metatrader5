@@ -5,6 +5,10 @@
 
 **Developer:** Bahadir Umut Iscimen
 
+
+> [!NOTE]
+> **Açıklama:** Bu proje bilgisayarınızda yüklü olan ana MetaTrader 5 uygulamasının **yerini almaz**. Sadece Docker üzerinden ayrı bir MT5 çalıştırarak **Python ile haberleşmeyi** ve algoritmik ticareti mümkün kılar.
+
 Bu proje, macOS Silicon cihazlarda MetaTrader 5'i sorunsuz çalıştırmak (`docker`) ve Python ile profesyonel algoritmik trading yapmak (`client`) için geliştirilmiş uçtan uca bir çözümdür.
 
 > [!CAUTION]

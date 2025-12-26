@@ -5,6 +5,10 @@
 
 **Developer:** Bahadir Umut Iscimen
 
+
+> [!NOTE]
+> **Clarification:** This project **does NOT replace** the native MetaTrader 5 application installed on your computer. It allows you to run a separate, headless MT5 instance via Docker to enable **Python communication** and algorithmic trading on macOS.
+
 This project is an end-to-end solution developed to run MetaTrader 5 seamlessly on macOS Silicon devices (`docker`) and to perform professional algorithmic trading with Python (`client`).
 
 > [!CAUTION]
