@@ -76,7 +76,7 @@ Terminali açın ve aşağıdaki komutu çalıştırarak gerekli araçları kuru
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 # 2. Gerekli paketleri yükleyin:
-brew install colima docker qemu lima
+brew install colima docker qemu lima lima-additional-guestagents
 ```
 
 ### 2. Motoru Başlatma
