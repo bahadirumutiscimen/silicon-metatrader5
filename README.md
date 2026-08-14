@@ -1,3 +1,5 @@
+
+
 <div align="center">
 
 # ⚡ SiliconMetaTrader5 🍏📈
@@ -143,6 +145,7 @@ docker compose up --build
 > * 🌐 **Visual Access:** Go to [http://localhost:6081/vnc.html](http://localhost:6081/vnc.html) .
 > * 🔑 **First Action:** Navigate to `File > Open an Account`, search for your broker, and log in manually. 
 > * 📊 **Data Sync Warning:** After broker login, historical bars are loaded in the background. Wait **5-10 minutes** before running tests/bots; seeing `No data` in the first minutes is normal. The larger your `MaxBars` value is, the longer this initial sync can take.
+> * ⚠️ **Restart Warning:** Even if Colima is running, stopping the container will require you to log in to MT5 again upon restart.
 
 ### 4️⃣ Install the Python Client
 Link your Python environment to the new Docker instance:
