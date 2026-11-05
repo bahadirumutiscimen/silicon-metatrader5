@@ -6,11 +6,12 @@ Updated 2026-11-05 by the `traffic` workflow (daily). GitHub keeps only 14 days 
 
 | Source | Count |
 | :-- | --: |
+| PyPI `siliconmetatrader5` (pip installs, all time) | 13153 |
 | GitHub release files (Homebrew installs, .deb, AppImage, CLI) | 1 |
 | Docker Hub pulls (bahadirumutiscimen/pysiliconwine, 1.x) | 1769 |
-| **Total (README badge)** | **1770** |
+| **Total (README badge)** | **14923** |
 
-Python package installs are counted by PyPI: https://pepy.tech/projects/siliconmetatrader5
+PyPI installs in the last 30 days: 1084 (source: pepy.tech).
 
 ## Release files
 
