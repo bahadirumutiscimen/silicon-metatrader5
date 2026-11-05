@@ -1,10 +1,11 @@
 # Homebrew formula for SiliconMetaTrader5 (desktop app + smt5 CLI), built from source.
 #
-# Lives in the tap repository bahadirumutiscimen/homebrew-tap as
-# Formula/siliconmt5.rb. The release workflow fills in @VERSION@ / @SHA256@ and
-# attaches the result to each GitHub release.
+# Template. The release workflow fills in @VERSION@ / @SHA256@, attaches the
+# result to the GitHub release and commits it as Formula/siliconmt5.rb, so this
+# repository is its own tap:
 #
-#   brew install bahadirumutiscimen/tap/siliconmt5
+#   brew tap bahadirumutiscimen/siliconmt5 https://github.com/bahadirumutiscimen/silicon-metatrader5
+#   brew install siliconmt5
 #
 # Built on the user's Mac, so there is no download quarantine and Gatekeeper
 # does not block the unsigned app; the bundle gets an ad-hoc signature.
@@ -74,10 +75,10 @@ class Siliconmt5 < Formula
       The app's setup wizard does the rest. From the terminal:
         smt5 doctor
 
-      Settings and the Mac yerel runtime live in
+      Settings and the Mac native runtime live in
         ~/Library/Application Support/SiliconMT5
       `brew uninstall siliconmt5` keeps them; remove everything from the app
-      (Runtime Ayarları → Sıfırlama ve kaldırma) before uninstalling.
+      (Reset and Remove) before uninstalling.
     EOS
   end
 

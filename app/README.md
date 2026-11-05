@@ -49,8 +49,9 @@ cd crates/smt5-desktop && cargo tauri build --bundles app   # → app/target/rel
   `smt5/local`).
 * **Linux**: `.github/workflows/release.yml` builds the AppImage and the .deb
   (with `/usr/bin/smt5`) on a `vX.Y.Z` tag, renders the formula with the
-  source tarball's sha256 and drafts a GitHub release (optionally pushes the
-  formula to `homebrew-tap` with `secrets.TAP_TOKEN`).
+  source tarball's sha256, commits it as `Formula/siliconmt5.rb` (this repository
+  is the Homebrew tap) and publishes the GitHub release with
+  `docs/releases/vX.Y.Z.md` as its notes.
 * **Settings of installed apps**: a packaged runtime folder carries a
   `.packaged` marker; its settings live in `~/Library/Application
   Support/SiliconMT5/.env` (macOS) or `~/.config/siliconmt5/.env` (Linux) and

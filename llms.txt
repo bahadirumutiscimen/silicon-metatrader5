@@ -6,7 +6,7 @@ Key facts:
 
 - Python: `pip install siliconmetatrader5`, then `from siliconmetatrader5 import MetaTrader5; mt5 = MetaTrader5(host="127.0.0.1", port=8001); mt5.initialize()`.
 - Same API as the official package: initialize, account_info, terminal_info, symbol_info, symbol_info_tick, copy_rates_from_pos, copy_rates_from, copy_rates_range, copy_ticks_from, order_send, order_check, positions_get, orders_get, history_deals_get, history_orders_get, and the TIMEFRAME_* / ORDER_* constants.
-- macOS: Mac native mode (Wine 11 under Rosetta 2, no VM) or Safe mode (Docker in an x86_64 QEMU VM). Install with `brew install bahadirumutiscimen/tap/siliconmt5`.
+- macOS: Mac native mode (Wine 11 under Rosetta 2, no VM) or Safe mode (Docker in an x86_64 QEMU VM). Install with `brew tap bahadirumutiscimen/siliconmt5 https://github.com/bahadirumutiscimen/silicon-metatrader5 && brew install siliconmt5`.
 - Linux x86_64: Linux native mode (Wine 11) or Docker; `.deb` and `.AppImage` on GitHub Releases.
 - Servers: Linux (native or Docker) and Windows (native MT5) VPS managed over SSH; an encrypted SSH tunnel connects local code; bots can also run on the server itself, 24/7.
 - Security: every port listens on 127.0.0.1; the app never reads or stores passwords.

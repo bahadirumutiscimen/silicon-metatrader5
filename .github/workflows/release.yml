@@ -3,12 +3,11 @@ name: release
 # Push a tag vX.Y.Z (matching app/Cargo.toml) to get a GitHub release with:
 #   - SiliconMetaTrader5_<ver>_amd64.AppImage and SiliconMetaTrader5_<ver>_amd64.deb (app + smt5 CLI)
 #   - smt5-<ver>-linux-x86_64.tar.gz (CLI only)
-#   - siliconmt5.rb (Homebrew formula with the source tarball's sha256)
+#   - siliconmt5.rb (Homebrew formula with the source tarball's sha256, also
+#     committed to main as Formula/siliconmt5.rb: this repo is the tap)
 # The runtime image for the same tag is published by runtime.yml.
 # With docs/releases/vX.Y.Z.md the release is published with those notes;
-# without it, it stays a draft. Copy siliconmt5.rb to the tap
-# (bahadirumutiscimen/homebrew-tap, Formula/siliconmt5.rb) or set the
-# TAP_TOKEN secret to have it pushed automatically.
+# without it, it stays a draft.
 
 on:
   push:
@@ -66,37 +65,39 @@ jobs:
           name: linux
           path: dist/
 
+  # This repository is its own Homebrew tap: the rendered formula is attached
+  # to the release and committed to main as Formula/siliconmt5.rb.
+  #   brew tap bahadirumutiscimen/siliconmt5 https://github.com/bahadirumutiscimen/silicon-metatrader5
+  #   brew install siliconmt5
   formula:
     runs-on: ubuntu-latest
-    env:
-      TAP_TOKEN: ${{ secrets.TAP_TOKEN }}
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ env.TAG }}
+          ref: main
+          fetch-depth: 0
       - name: render the Homebrew formula
         run: |
           v="${TAG#v}"
-          curl -fsSL -o src.tar.gz "https://github.com/${GITHUB_REPOSITORY}/archive/refs/tags/${TAG}.tar.gz"
-          sha="$(sha256sum src.tar.gz | cut -d' ' -f1)"
-          mkdir -p dist
-          sed -e "s/@VERSION@/$v/g" -e "s/@SHA256@/$sha/" packaging/homebrew/siliconmt5.rb > dist/siliconmt5.rb
-          grep -E '^\s+(url|sha256) ' dist/siliconmt5.rb
+          curl -fsSL -o /tmp/src.tar.gz "https://github.com/${GITHUB_REPOSITORY}/archive/refs/tags/${TAG}.tar.gz"
+          sha="$(sha256sum /tmp/src.tar.gz | cut -d' ' -f1)"
+          mkdir -p dist Formula
+          git show "${TAG}:packaging/homebrew/siliconmt5.rb" | sed -e "s/@VERSION@/$v/g" -e "s/@SHA256@/$sha/" > dist/siliconmt5.rb
+          cp dist/siliconmt5.rb Formula/siliconmt5.rb
+          grep -E '^\s+(url|sha256) ' Formula/siliconmt5.rb
       - uses: actions/upload-artifact@v4
         with:
           name: formula
           path: dist/
-      - name: push to the tap (optional, needs secrets.TAP_TOKEN)
-        if: env.TAP_TOKEN != ''
+      - name: commit Formula/siliconmt5.rb to main
         run: |
-          git clone "https://x-access-token:${TAP_TOKEN}@github.com/${GITHUB_REPOSITORY_OWNER}/homebrew-tap.git" tap
-          mkdir -p tap/Formula && cp dist/siliconmt5.rb tap/Formula/siliconmt5.rb
-          cd tap
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add Formula/siliconmt5.rb
-          git diff --cached --quiet || git commit -m "siliconmt5 ${TAG#v}"
-          git push
+          if git diff --cached --quiet; then echo "formula unchanged"; exit 0; fi
+          git commit -m "brew: siliconmt5 ${TAG#v}"
+          for i in 1 2 3; do git pull --rebase origin main && git push origin HEAD:main && exit 0; sleep 5; done
+          exit 1
 
   release:
     needs: [linux, formula]

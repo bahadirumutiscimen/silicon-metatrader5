@@ -43,7 +43,7 @@ SiliconMetaTrader5, gerçek bir **MetaTrader 5** terminalini küçük bir Python
 | **Python API** | MetaQuotes'un resmi `MetaTrader5` paketiyle aynı fonksiyonlar: `copy_rates_from_pos`, `symbol_info_tick`, `order_send`, `positions_get`, … |
 | **Nerede çalışır** | Apple Silicon (M1, M2, M3, M4) ve Intel macOS · Linux x86_64 · SSH ile kendi Linux veya Windows VPS'iniz |
 | **Kimin için** | MT5 piyasa verisi ve emirleri kullanan algoritmik işlem, trading botları, backtest, araştırma defterleri ve veri akışları |
-| **Kurulum** | `brew install bahadirumutiscimen/tap/siliconmt5` · `.deb` / `.AppImage` · `pip install siliconmetatrader5` |
+| **Kurulum** | `brew tap bahadirumutiscimen/siliconmt5 https://github.com/bahadirumutiscimen/silicon-metatrader5 && brew install siliconmt5` · `.deb` / `.AppImage` · `pip install siliconmetatrader5` |
 
 ## Öne çıkanlar
 
@@ -112,7 +112,8 @@ Aynı testi kendi makinenizde **Veri Testi** sayfasından ya da `smt5 bench` ile
 **macOS**
 
 ```bash
-brew install bahadirumutiscimen/tap/siliconmt5
+brew tap bahadirumutiscimen/siliconmt5 https://github.com/bahadirumutiscimen/silicon-metatrader5
+brew install siliconmt5
 smt5 app-install          # uygulamayı Uygulamalar'a ekler
 ```
 
