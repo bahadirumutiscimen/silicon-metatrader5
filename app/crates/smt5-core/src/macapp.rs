@@ -126,7 +126,7 @@ pub fn status() -> CopyStatus {
 /// Copy the Homebrew bundle into Applications (replacing an older copy or a
 /// link; never anything that is not SiliconMetaTrader5). Returns the destination.
 pub fn install(runner: &dyn Runner) -> Result<PathBuf> {
-    let src = brew_bundle().context("SiliconMetaTrader5.app was not found in Homebrew (brew tap bahadirumutiscimen/siliconmt5 https://github.com/bahadirumutiscimen/silicon-metatrader5 && brew install siliconmt5)")?;
+    let src = brew_bundle().context("SiliconMetaTrader5.app was not found in Homebrew (brew tap bahadirumutiscimen/siliconmt5 https://github.com/bahadirumutiscimen/silicon-metatrader5 && brew trust bahadirumutiscimen/siliconmt5 && brew install siliconmt5)")?;
     let legacy = legacy_copy();
     let dest = match (installed_copy(), &legacy) {
         (Some(existing), _) => existing,

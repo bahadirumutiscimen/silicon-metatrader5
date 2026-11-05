@@ -68,6 +68,7 @@ jobs:
   # This repository is its own Homebrew tap: the rendered formula is attached
   # to the release and committed to main as Formula/siliconmt5.rb.
   #   brew tap bahadirumutiscimen/siliconmt5 https://github.com/bahadirumutiscimen/silicon-metatrader5
+  #   brew trust bahadirumutiscimen/siliconmt5
   #   brew install siliconmt5
   formula:
     runs-on: ubuntu-latest

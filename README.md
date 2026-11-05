@@ -43,7 +43,7 @@ SiliconMetaTrader5 runs a real **MetaTrader 5** terminal next to a small Python 
 | **Python API** | Same functions as MetaQuotes' official `MetaTrader5` package: `copy_rates_from_pos`, `symbol_info_tick`, `order_send`, `positions_get`, … |
 | **Runs on** | macOS on Apple Silicon (M1, M2, M3, M4) and Intel · Linux x86_64 · your own Linux or Windows VPS over SSH |
 | **For** | Algorithmic trading, trading bots, backtests, research notebooks and data pipelines that use MT5 market data and orders |
-| **Install** | `brew tap bahadirumutiscimen/siliconmt5 https://github.com/bahadirumutiscimen/silicon-metatrader5 && brew install siliconmt5` · `.deb` / `.AppImage` · `pip install siliconmetatrader5` |
+| **Install** | `brew tap bahadirumutiscimen/siliconmt5 https://github.com/bahadirumutiscimen/silicon-metatrader5 && brew trust bahadirumutiscimen/siliconmt5 && brew install siliconmt5` · `.deb` / `.AppImage` · `pip install siliconmetatrader5` |
 
 ## Highlights
 
@@ -113,6 +113,7 @@ Run the same test on your machine from the **Data Test** page or with `smt5 benc
 
 ```bash
 brew tap bahadirumutiscimen/siliconmt5 https://github.com/bahadirumutiscimen/silicon-metatrader5
+brew trust bahadirumutiscimen/siliconmt5
 brew install siliconmt5
 smt5 app-install          # adds the app to Applications
 ```

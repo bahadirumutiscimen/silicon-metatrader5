@@ -5,6 +5,7 @@
 # repository is its own tap:
 #
 #   brew tap bahadirumutiscimen/siliconmt5 https://github.com/bahadirumutiscimen/silicon-metatrader5
+#   brew trust bahadirumutiscimen/siliconmt5
 #   brew install siliconmt5
 #
 # Built on the user's Mac, so there is no download quarantine and Gatekeeper
