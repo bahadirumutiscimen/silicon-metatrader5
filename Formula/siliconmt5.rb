@@ -13,7 +13,7 @@
 class Siliconmt5 < Formula
   desc "MetaTrader 5 + Python bridge on macOS: desktop app and smt5 CLI"
   homepage "https://github.com/bahadirumutiscimen/silicon-metatrader5"
-  url "https://github.com/bahadirumutiscimen/silicon-metatrader5/archive/refs/tags/v1.3.0.tar.gz"
+  url "https://github.com/bahadirumutiscimen/silicon-metatrader5/releases/download/v1.3.0/silicon-metatrader5-1.3.0.tar.gz"
   sha256 "b458cebb0197f8f6aa29ed9a91f9491949682a1f9837f7a88cc515f0c2d94122"
   license "PolyForm-Noncommercial-1.0.0"
   head "https://github.com/bahadirumutiscimen/silicon-metatrader5.git", branch: "main"
