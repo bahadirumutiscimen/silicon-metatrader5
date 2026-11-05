@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "siliconmetatrader5"
+dynamic = ["version"]
+description = "The MetaTrader 5 (MT5) Python API on macOS (Apple Silicon M1-M4, Intel), Linux and your own Linux or Windows VPS, with the official MetaTrader5 function names"
+readme = "README.md"
+license = {text = "PolyForm-Noncommercial-1.0.0"}
+authors = [
+    {name = "Bahadir Umut Iscimen", email = "buiscimen@gmail.com"}
+]
+keywords = ["metatrader5", "metatrader 5", "mt5", "mt5 python", "mql5", "trading", "algorithmic trading", "trading bot", "forex", "backtesting", "apple silicon", "m1", "m4", "macos", "linux", "vps", "wine", "rpyc"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: Other/Proprietary License",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+requires-python = ">=3.9"
+# Keep in step with runtime/config/requirements-*.txt (the bridge server side).
+dependencies = [
+    "rpyc>=5.0.0",
+    "plumbum>=1.8.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/bahadirumutiscimen/silicon-metatrader5"
+Repository = "https://github.com/bahadirumutiscimen/silicon-metatrader5"
+Issues = "https://github.com/bahadirumutiscimen/silicon-metatrader5/issues"
+
+[tool.setuptools.dynamic]
+version = {attr = "siliconmetatrader5.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["siliconmetatrader5*"]
