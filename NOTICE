@@ -1,0 +1,8 @@
+Required Notice: Copyright (c) 2025-2026 Bahadır Umut İşçimen (https://github.com/bahadirumutiscimen/silicon-metatrader5)
+
+SiliconMetaTrader5 is licensed under the PolyForm Noncommercial License 1.0.0 (see LICENSE).
+Commercial use requires a separate license from the copyright holder.
+
+Third-party components keep their own licenses:
+- noVNC (app/crates/smt5-desktop/ui/vendor/novnc): MPL-2.0, with its own license files in that folder.
+- Components the runtime downloads during setup (Wine, Python, MetaTrader 5, TightVNC, websockify, Python packages) are not part of this repository and are used under their own terms.
