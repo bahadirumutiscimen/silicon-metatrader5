@@ -2,19 +2,23 @@
 
 Writes to $STATS_DIR (the `stats` branch, checked out by traffic.yml):
 - traffic.json: daily views and clones (GitHub keeps only 14 days), and a daily
-  snapshot of every release file's download count and the Docker Hub pulls.
-- badge-downloads.json: a shields.io endpoint badge with the total downloads.
+  snapshot of every release file's download count, the Docker Hub pulls and the
+  PyPI installs (pepy.tech).
+- badge-downloads.json: the README's single downloads badge: PyPI + Docker Hub +
+  release files (+ DOWNLOADS_BASELINE).
 - README.md: a readable summary.
 """
 import datetime
 import json
 import os
 import pathlib
+import re
 import subprocess
 import urllib.request
 
 REPO = os.environ["REPO"]
 OUT = pathlib.Path(os.environ.get("STATS_DIR", ".github/stats"))
+PYPI = os.environ.get("PYPI_PACKAGE", "siliconmetatrader5")
 DOCKERHUB = [r for r in os.environ.get("DOCKERHUB_REPOS", "bahadirumutiscimen/pysiliconwine").split() if r]
 # Downloads that happened somewhere nothing can count any more (set as the
 # DOWNLOADS_BASELINE repository variable); 0 by default.
@@ -31,6 +35,15 @@ def dockerhub_pulls(repo):
         return int(json.load(r)["pull_count"])
 
 
+def pypi_installs(package, period):
+    """Exact PyPI downloads from pepy.tech's badge (period: total | month)."""
+    url = f"https://static.pepy.tech/personalized-badge/{package}?period={period}&units=NONE&left_text=x"
+    req = urllib.request.Request(url, headers={"User-Agent": "siliconmt5-stats"})
+    with urllib.request.urlopen(req, timeout=20) as r:
+        nums = re.findall(r">\s*([0-9]+)\s*<", r.read().decode())
+    return int(nums[-1])
+
+
 def short(n):
     for div, unit in ((1_000_000, "M"), (1_000, "k")):
         if n >= div:
@@ -42,7 +55,7 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
     path = OUT / "traffic.json"
     data = json.loads(path.read_text()) if path.exists() else {}
-    for key in ("views", "clones", "downloads", "dockerhub"):
+    for key in ("views", "clones", "downloads", "dockerhub", "pypi"):
         data.setdefault(key, {})
     today = datetime.date.today().isoformat()
 
@@ -66,19 +79,31 @@ def main():
                 pulls[repo] = last[-1]
     data["dockerhub"][today] = pulls
 
+    pypi = {}
+    for period in ("total", "month"):
+        try:
+            pypi[period] = pypi_installs(PYPI, period)
+        except Exception as e:
+            print(f"::warning::PyPI {period}: {e}")
+            last = [v[period] for v in data["pypi"].values() if period in v]
+            if last:
+                pypi[period] = last[-1]
+    data["pypi"][today] = pypi
+
     for key in data:
         data[key] = dict(sorted(data[key].items()))
     path.write_text(json.dumps(data, indent=1) + "\n")
 
     releases = sum(data["downloads"][today].values())
     docker = sum(pulls.values())
-    total = releases + docker + BASELINE
+    pip = pypi.get("total", 0)
+    total = pip + releases + docker + BASELINE
     (OUT / "badge-downloads.json").write_text(json.dumps(
         {"schemaVersion": 1, "label": "downloads", "message": short(total), "color": "24292f"}) + "\n")
-    write_summary(data, today, releases, docker, total)
+    write_summary(data, today, pypi, releases, docker, total)
 
 
-def write_summary(data, today, releases, docker, total):
+def write_summary(data, today, pypi, releases, docker, total):
     months = {}
     for kind in ("views", "clones"):
         for day, v in data[kind].items():
@@ -99,13 +124,14 @@ def write_summary(data, today, releases, docker, total):
         "",
         "| Source | Count |",
         "| :-- | --: |",
+        f"| PyPI `{PYPI}` (pip installs, all time) | {pypi.get('total', 0)} |",
         f"| GitHub release files (Homebrew installs, .deb, AppImage, CLI) | {releases} |",
         f"| Docker Hub pulls ({', '.join(DOCKERHUB)}, 1.x) | {docker} |",
     ]
     if BASELINE:
         lines.append(f"| Earlier downloads that can no longer be counted | {BASELINE} |")
     lines += [f"| **Total (README badge)** | **{total}** |", "",
-              "Python package installs are counted by PyPI: https://pepy.tech/projects/siliconmetatrader5", "",
+              f"PyPI installs in the last 30 days: {pypi.get('month', 0)} (source: pepy.tech).", "",
               "## Release files", "", "| Release | Downloads |", "| :-- | --: |"]
     lines += [f"| {tag} | {n} |" for tag, n in sorted(by_release.items(), reverse=True)]
     lines += ["", "## Traffic per month", "",

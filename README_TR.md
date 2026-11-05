@@ -16,8 +16,6 @@
 <a href="https://github.com/bahadirumutiscimen/silicon-metatrader5/releases/latest"><img alt="Sürüm" src="https://img.shields.io/github/v/release/bahadirumutiscimen/silicon-metatrader5?style=flat-square&color=155dfc&label=s%C3%BCr%C3%BCm"></a>
 <a href="https://pypi.org/project/siliconmetatrader5/"><img alt="PyPI" src="https://img.shields.io/pypi/v/siliconmetatrader5?style=flat-square&color=155dfc&label=pypi"></a>
 <a href="https://github.com/bahadirumutiscimen/silicon-metatrader5/blob/stats/README.md"><img alt="İndirmeler" src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbahadirumutiscimen%2Fsilicon-metatrader5%2Fstats%2Fbadge-downloads.json&style=flat-square&label=indirme"></a>
-<a href="https://pepy.tech/projects/siliconmetatrader5"><img alt="PyPI indirmeleri" src="https://img.shields.io/pepy/dt/siliconmetatrader5?style=flat-square&color=24292f&label=pip%20kurulum"></a>
-<a href="https://pypistats.org/packages/siliconmetatrader5"><img alt="Aylık PyPI indirmeleri" src="https://img.shields.io/pypi/dm/siliconmetatrader5?style=flat-square&color=24292f&label=pip%20kurulum%2Fay"></a>
 <img alt="Python 3.9+" src="https://img.shields.io/badge/python-3.9%2B-24292f?style=flat-square">
 <img alt="macOS · Linux · Windows sunucu" src="https://img.shields.io/badge/%C3%A7al%C4%B1%C5%9F%C4%B1r-macOS%20·%20Linux%20·%20Windows%20sunucu-24292f?style=flat-square">
 <a href="#lisans"><img alt="Lisans: PolyForm Noncommercial" src="https://img.shields.io/badge/lisans-PolyForm%20Noncommercial-24292f?style=flat-square"></a>
