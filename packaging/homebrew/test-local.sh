@@ -25,7 +25,7 @@ echo "==> local tap smt5/local"
 brew tap-new --no-git smt5/local >/dev/null 2>&1 || true
 TAP="$(brew --repository)/Library/Taps/smt5/homebrew-local/Formula"
 mkdir -p "$TAP"
-sed -e "s|https://github.com/bahadirumutiscimen/silicon-metatrader5/archive/refs/tags/v@VERSION@.tar.gz|file://$WORK/$NAME.tar.gz|" \
+sed -e "s|https://github.com/bahadirumutiscimen/silicon-metatrader5/releases/download/v@VERSION@/silicon-metatrader5-@VERSION@.tar.gz|file://$WORK/$NAME.tar.gz|" \
     -e "s|@SHA256@|$SHA|" -e "s|@VERSION@|$VERSION|" \
     "$ROOT/packaging/homebrew/siliconmt5.rb" >"$TAP/siliconmt5.rb"
 

@@ -1,0 +1,40 @@
+name: traffic
+
+# GitHub keeps views and clones for 14 days only. Every Monday this records
+# them, plus the download count of every release file, in
+# .github/stats/traffic.json and a summary in .github/stats/README.md.
+#
+# Needs the TRAFFIC_TOKEN secret: a fine-grained personal access token for this
+# repository with "Administration: Read-only" (required by the traffic API).
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency: traffic
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: fetch and merge
+        env:
+          GH_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          test -n "$GH_TOKEN" || { echo "::error::TRAFFIC_TOKEN secret is not set"; exit 1; }
+          python3 .github/scripts/traffic.py
+      - name: commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/stats
+          if git diff --cached --quiet; then echo "no change"; exit 0; fi
+          git commit -m "stats: traffic $(date -u +%F)"
+          for i in 1 2 3; do git pull --rebase origin main && git push origin HEAD:main && exit 0; sleep 5; done
+          exit 1

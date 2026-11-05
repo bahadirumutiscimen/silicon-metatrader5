@@ -17,6 +17,10 @@ on:
       tag:
         description: "Existing tag to build (vX.Y.Z)"
         required: true
+      formula_only:
+        description: "Only the source tarball, formula and notes (skip the Linux build)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -26,6 +30,7 @@ env:
 
 jobs:
   linux:
+    if: ${{ !inputs.formula_only }}
     runs-on: ubuntu-22.04          # older glibc → the AppImage runs on more distros
     steps:
       - uses: actions/checkout@v5
@@ -77,13 +82,16 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
+      # The source tarball is attached to the release and the formula points
+      # at that copy: release assets have a download count, GitHub's own
+      # archive links do not, so every brew install/upgrade is counted.
       - name: render the Homebrew formula
         run: |
           v="${TAG#v}"
-          curl -fsSL -o /tmp/src.tar.gz "https://github.com/${GITHUB_REPOSITORY}/archive/refs/tags/${TAG}.tar.gz"
-          sha="$(sha256sum /tmp/src.tar.gz | cut -d' ' -f1)"
           mkdir -p dist Formula
-          git show "${TAG}:packaging/homebrew/siliconmt5.rb" | sed -e "s/@VERSION@/$v/g" -e "s/@SHA256@/$sha/" > dist/siliconmt5.rb
+          curl -fsSL -o "dist/silicon-metatrader5-$v.tar.gz" "https://github.com/${GITHUB_REPOSITORY}/archive/refs/tags/${TAG}.tar.gz"
+          sha="$(sha256sum "dist/silicon-metatrader5-$v.tar.gz" | cut -d' ' -f1)"
+          sed -e "s/@VERSION@/$v/g" -e "s/@SHA256@/$sha/" packaging/homebrew/siliconmt5.rb > dist/siliconmt5.rb
           cp dist/siliconmt5.rb Formula/siliconmt5.rb
           grep -E '^\s+(url|sha256) ' Formula/siliconmt5.rb
       - uses: actions/upload-artifact@v4
@@ -102,11 +110,12 @@ jobs:
 
   release:
     needs: [linux, formula]
+    if: ${{ always() && needs.formula.result == 'success' && (needs.linux.result == 'success' || needs.linux.result == 'skipped') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ env.TAG }}
+          ref: main
           path: src
       - uses: actions/download-artifact@v4
         with:
