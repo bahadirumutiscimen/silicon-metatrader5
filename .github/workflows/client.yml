@@ -1,0 +1,73 @@
+name: client
+
+on:
+  pull_request:
+    paths: ["client/**", ".github/workflows/client.yml"]
+  push:
+    branches: [main]
+    paths: ["client/**", ".github/workflows/client.yml"]
+    tags: ["client-v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.9", "3.11", "3.13", "3.14"]
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install .
+      - run: python -m unittest discover -s tests -v
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install build twine
+      - run: python -m build
+      - run: python -m twine check dist/*
+      - name: tag matches the package version
+        if: startsWith(github.ref, 'refs/tags/client-v')
+        run: |
+          v="$(python -c 'import re; print(re.search(r"__version__ = \"([^\"]+)\"", open("siliconmetatrader5/__init__.py").read()).group(1))')"
+          test "client-v$v" = "${GITHUB_REF_NAME}" || { echo "tag ${GITHUB_REF_NAME} != client-v$v"; exit 1; }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: client/dist/
+
+  # Publishing to PyPI with a trusted publisher (no token in the repo).
+  # One-time setup on pypi.org → siliconmetatrader5 → Publishing: add this
+  # repository, workflow "client.yml", environment "pypi". Then push a tag
+  # client-vX.Y.Z matching siliconmetatrader5.__version__.
+  publish:
+    if: startsWith(github.ref, 'refs/tags/client-v')
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1

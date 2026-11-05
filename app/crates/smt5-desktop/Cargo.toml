@@ -1,0 +1,25 @@
+[package]
+name = "smt5-desktop"
+description = "SiliconMetaTrader5 desktop app (Tauri v2): runtime status, MT5 screen, logs, data management, setup wizard"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version = "1.85"
+publish = false
+
+[[bin]]
+name = "siliconmt5"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+smt5-core = { path = "../smt5-core" }
+anyhow.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tauri = { version = "2", features = ["tray-icon", "image-png"] }
+tauri-plugin-dialog = "2"
+tauri-plugin-clipboard-manager = "2"

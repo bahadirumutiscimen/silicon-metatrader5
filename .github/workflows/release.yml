@@ -1,0 +1,128 @@
+name: release
+
+# Push a tag vX.Y.Z (matching app/Cargo.toml) to get a GitHub release with:
+#   - SiliconMetaTrader5_<ver>_amd64.AppImage and SiliconMetaTrader5_<ver>_amd64.deb (app + smt5 CLI)
+#   - smt5-<ver>-linux-x86_64.tar.gz (CLI only)
+#   - siliconmt5.rb (Homebrew formula with the source tarball's sha256)
+# The runtime image for the same tag is published by runtime.yml.
+# With docs/releases/vX.Y.Z.md the release is published with those notes;
+# without it, it stays a draft. Copy siliconmt5.rb to the tap
+# (bahadirumutiscimen/homebrew-tap, Formula/siliconmt5.rb) or set the
+# TAP_TOKEN secret to have it pushed automatically.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to build (vX.Y.Z)"
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  TAG: ${{ inputs.tag || github.ref_name }}
+
+jobs:
+  linux:
+    runs-on: ubuntu-22.04          # older glibc → the AppImage runs on more distros
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - name: version matches the tag
+        run: |
+          v="$(sed -n 's/^version = "\(.*\)"/\1/p' app/Cargo.toml | head -1)"
+          test "v$v" = "$TAG" || { echo "tag $TAG != app version v$v"; exit 1; }
+          echo "VERSION=$v" >> "$GITHUB_ENV"
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: app
+      - name: build dependencies (WebKitGTK, tray, AppImage)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev libxdo-dev libssl-dev patchelf file
+      - name: tauri-cli
+        run: cargo install tauri-cli --version "^2" --locked
+      - name: smt5 CLI (also packed into the .deb)
+        working-directory: app
+        run: cargo build --release --locked -p smt5-cli
+      - name: AppImage + .deb
+        working-directory: app/crates/smt5-desktop
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: "1"
+        run: cargo tauri build --bundles appimage,deb
+      - name: collect
+        run: |
+          mkdir -p dist
+          cp app/target/release/bundle/appimage/*.AppImage app/target/release/bundle/deb/*.deb dist/
+          tar -C app/target/release -czf "dist/smt5-$VERSION-linux-x86_64.tar.gz" smt5
+          ls -l dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: dist/
+
+  formula:
+    runs-on: ubuntu-latest
+    env:
+      TAP_TOKEN: ${{ secrets.TAP_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - name: render the Homebrew formula
+        run: |
+          v="${TAG#v}"
+          curl -fsSL -o src.tar.gz "https://github.com/${GITHUB_REPOSITORY}/archive/refs/tags/${TAG}.tar.gz"
+          sha="$(sha256sum src.tar.gz | cut -d' ' -f1)"
+          mkdir -p dist
+          sed -e "s/@VERSION@/$v/g" -e "s/@SHA256@/$sha/" packaging/homebrew/siliconmt5.rb > dist/siliconmt5.rb
+          grep -E '^\s+(url|sha256) ' dist/siliconmt5.rb
+      - uses: actions/upload-artifact@v4
+        with:
+          name: formula
+          path: dist/
+      - name: push to the tap (optional, needs secrets.TAP_TOKEN)
+        if: env.TAP_TOKEN != ''
+        run: |
+          git clone "https://x-access-token:${TAP_TOKEN}@github.com/${GITHUB_REPOSITORY_OWNER}/homebrew-tap.git" tap
+          mkdir -p tap/Formula && cp dist/siliconmt5.rb tap/Formula/siliconmt5.rb
+          cd tap
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Formula/siliconmt5.rb
+          git diff --cached --quiet || git commit -m "siliconmt5 ${TAG#v}"
+          git push
+
+  release:
+    needs: [linux, formula]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+          path: src
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      # docs/releases/<tag>.md present: the release gets those notes and is
+      # published once every file is uploaded. Otherwise: a draft with
+      # generated notes, to check and publish by hand.
+      - name: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ls -l dist
+          notes="src/docs/releases/${TAG}.md"
+          if [ -f "$notes" ]; then set -- --notes-file "$notes"; else set -- --generate-notes; fi
+          gh release view "$TAG" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1 \
+            || gh release create "$TAG" -R "$GITHUB_REPOSITORY" --draft --title "SiliconMetaTrader5 ${TAG#v}" "$@"
+          gh release upload "$TAG" -R "$GITHUB_REPOSITORY" --clobber dist/*
+          if [ -f "$notes" ]; then
+            gh release edit "$TAG" -R "$GITHUB_REPOSITORY" --notes-file "$notes" --draft=false --latest
+          fi

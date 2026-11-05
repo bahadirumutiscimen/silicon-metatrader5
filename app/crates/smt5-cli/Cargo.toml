@@ -1,0 +1,19 @@
+[package]
+name = "smt5-cli"
+description = "smt5 — command line for the SiliconMetaTrader5 runtime"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "smt5"
+path = "src/main.rs"
+
+[dependencies]
+smt5-core = { path = "../smt5-core" }
+anyhow.workspace = true
+clap.workspace = true
+serde.workspace = true
+serde_json.workspace = true

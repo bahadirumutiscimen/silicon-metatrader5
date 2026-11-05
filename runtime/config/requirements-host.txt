@@ -1,0 +1,5 @@
+# Linux-side venv (/opt/smt5-venv) used by the status API to probe the bridge
+# exactly the way user code does.
+siliconmetatrader5==1.2.3
+rpyc==6.0.2
+plumbum==1.10.0

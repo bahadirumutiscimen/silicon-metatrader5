@@ -1,0 +1,3 @@
+noVNC 1.7.0 (https://github.com/novnc/noVNC/releases/tag/v1.7.0), core/ and vendor/ only.
+Source zip sha256 d55e9cce9a611294df33c7200f32f35108652de2d86a468bebcfc6f2a1c9a196.
+License: MPL-2.0 (core), see LICENSE.txt and docs/. Not modified.

@@ -1,0 +1,24 @@
+[workspace]
+resolver = "2"
+members = ["crates/smt5-core", "crates/smt5-cli", "crates/smt5-desktop"]
+# `cargo build` builds the CLI only; the desktop app needs WebKit/GTK on Linux:
+#   cargo build -p smt5-desktop --release
+default-members = ["crates/smt5-core", "crates/smt5-cli"]
+
+[workspace.package]
+version = "1.3.0"
+edition = "2021"
+license = "PolyForm-Noncommercial-1.0.0"
+repository = "https://github.com/bahadirumutiscimen/silicon-metatrader5"
+rust-version = "1.80"
+
+[workspace.dependencies]
+anyhow = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+ureq = { version = "2", default-features = false, features = ["json"] }
+clap = { version = "4", features = ["derive"] }
+
+[profile.release]
+strip = true
+lto = "thin"

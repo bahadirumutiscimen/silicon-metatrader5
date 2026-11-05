@@ -1,0 +1,15 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Main window, tray panel and the MetaTrader 5 screen window: core events/window APIs and the folder picker",
+  "windows": [
+    "main",
+    "panel",
+    "mt5"
+  ],
+  "permissions": [
+    "core:default",
+    "core:window:allow-start-dragging",
+    "dialog:allow-open"
+  ]
+}

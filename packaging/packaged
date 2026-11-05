@@ -1,0 +1,2 @@
+This runtime folder was installed by a package (Homebrew, .deb, AppImage).
+Settings live in the user config folder, not here. See app/crates/smt5-core/src/runtime.rs.

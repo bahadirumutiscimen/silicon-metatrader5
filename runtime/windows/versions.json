@@ -1,0 +1,23 @@
+{
+  "python": {
+    "version": "3.13.17",
+    "url": "https://www.python.org/ftp/python/3.13.17/python-3.13.17-amd64.exe",
+    "sha256": "5da012101ba2e17113a9a1cd901e9ce1441086f2b7ecb5de06ec94163899a190"
+  },
+  "tightvnc": {
+    "version": "2.8.90",
+    "url": "https://www.tightvnc.com/download/2.8.90/tightvnc-2.8.90-gpl-setup-64bit.msi",
+    "sha256": "",
+    "signer": "GlavSoft"
+  },
+  "novnc": {
+    "version": "1.7.0",
+    "url": "https://github.com/novnc/noVNC/archive/refs/tags/v1.7.0.zip",
+    "sha256": "d55e9cce9a611294df33c7200f32f35108652de2d86a468bebcfc6f2a1c9a196"
+  },
+  "mt5": {
+    "url": "https://download.mql5.com/cdn/web/metaquotes.ltd/mt5/mt5setup.exe",
+    "sha256": "",
+    "signer": "MetaQuotes"
+  }
+}

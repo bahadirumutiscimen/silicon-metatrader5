@@ -1,0 +1,67 @@
+name: runtime
+
+on:
+  pull_request:
+    paths: ["runtime/**", ".github/workflows/runtime.yml"]
+  push:
+    branches: [main]
+    paths: ["runtime/**", ".github/workflows/runtime.yml"]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"    # oldest Python the status API runs on (macOS system python3)
+      - name: shellcheck
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
+          shellcheck -x -P runtime/scripts runtime/scripts/*.sh
+          shellcheck -s bash runtime/macos/native.sh
+      - name: status API tests
+        run: python -m unittest runtime/status/test_smt5_status.py runtime/status/test_datatest.py runtime/status/test_supertrend_strategy.py runtime/status/test_preflight.py runtime/status/test_windows_scripts.py runtime/status/test_supervisor_win.py -v
+      - name: compose config
+        working-directory: runtime
+        run: docker compose config -q
+
+  image:
+    needs: checks
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Log in to GHCR
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/siliconmt5
+          tags: |
+            type=edge,branch=main
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,format=short
+      - uses: docker/build-push-action@v6
+        with:
+          context: runtime
+          platforms: linux/amd64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

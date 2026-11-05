@@ -1,0 +1,9 @@
+# Installed into the server's own Python (runtime/windows/smt5.ps1 install,
+# <root>\python). Same pins as requirements-wine.txt + websockify for noVNC.
+# Keep rpyc/plumbum in lockstep with requirements-host.txt and with the
+# version users install on their machine (pip install siliconmetatrader5).
+MetaTrader5==5.0.6231
+siliconmetatrader5==1.2.3
+rpyc==6.0.2
+plumbum==1.10.0
+websockify==0.13.0

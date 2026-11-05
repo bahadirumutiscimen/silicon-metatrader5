@@ -1,0 +1,55 @@
+# SiliconMetaTrader5 runtime.
+#
+#   cp .env.example .env        # set SMT5_WEB_PASSWORD and SMT5_API_TOKEN
+#   docker compose pull         # prebuilt image from GHCR, or:
+#   docker compose build        # build locally
+#   docker compose up -d
+#
+# Every port is bound to 127.0.0.1 on purpose: the bridge on 8001 executes
+# arbitrary Python inside the container and can send orders to your account.
+# Reach it from another machine through an SSH tunnel, not by opening the bind.
+name: siliconmt5
+
+services:
+  siliconmt5:
+    image: ${SMT5_IMAGE:-ghcr.io/bahadirumutiscimen/siliconmt5}:${SMT5_VERSION:-1.3.0}
+    build:
+      context: .
+      args:
+        SMT5_ALLOW_USER_EMULATION: ${SMT5_ALLOW_USER_EMULATION:-0}
+    platform: linux/amd64
+    container_name: siliconmt5
+    environment:
+      TZ: ${TZ:-Europe/Istanbul}
+      SMT5_RESOLUTION: ${SMT5_RESOLUTION:-1366x768}
+      SMT5_DPI: ${SMT5_DPI:-96}
+      SMT5_MAXBARS: ${SMT5_MAXBARS:-100000}
+      SMT5_ALGO_TRADING: ${SMT5_ALGO_TRADING:-1}
+      SMT5_DLL_IMPORT: ${SMT5_DLL_IMPORT:-0}
+      SMT5_AUDIO: ${SMT5_AUDIO:-0}
+      SMT5_LOG_MAX_MB: ${SMT5_LOG_MAX_MB:-10}
+      SMT5_API_TOKEN: ${SMT5_API_TOKEN:-}
+      SMT5_ALLOW_USER_EMULATION: ${SMT5_ALLOW_USER_EMULATION:-0}
+      SMT5_WEB_PASSWORD: ${SMT5_WEB_PASSWORD:-}
+    ports:
+      - "${SMT5_BIND:-127.0.0.1}:${SMT5_DISPLAY_PORT:-6081}:3000"
+      - "${SMT5_BIND:-127.0.0.1}:${SMT5_BRIDGE_PORT:-8001}:8001"
+      - "${SMT5_BIND:-127.0.0.1}:${SMT5_STATUS_PORT:-8002}:8002"
+    volumes:
+      - siliconmt5_config:/config
+      - siliconmt5_logs:/siliconmt5/logs
+    shm_size: "1gb"
+    security_opt:
+      - seccomp:unconfined
+    restart: unless-stopped
+    stop_grace_period: 45s
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8002/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 120s
+
+volumes:
+  siliconmt5_config:
+  siliconmt5_logs:

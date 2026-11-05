@@ -1,0 +1,15 @@
+[package]
+name = "smt5-core"
+description = "SiliconMetaTrader5 runtime management: providers (Colima/Docker/SSH), status API client, doctor checks"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+ureq.workspace = true
+sha2 = "0.10"

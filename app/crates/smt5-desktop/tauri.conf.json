@@ -1,0 +1,73 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "SiliconMetaTrader5",
+  "mainBinaryName": "siliconmt5",
+  "version": "1.3.0",
+  "identifier": "com.siliconmt5.desktop",
+  "build": {
+    "frontendDist": "ui"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "SiliconMetaTrader5",
+        "width": 1320,
+        "height": 860,
+        "minWidth": 980,
+        "minHeight": 640,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "center": true,
+        "trafficLightPosition": {
+          "x": 28,
+          "y": 30
+        }
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src ipc: http://ipc.localhost https://api.github.com ws://127.0.0.1:* ws://localhost:*; frame-src http://127.0.0.1:* http://localhost:*"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "app",
+      "deb",
+      "appimage"
+    ],
+    "category": "Finance",
+    "shortDescription": "MetaTrader 5 on Apple Silicon and Linux",
+    "copyright": "Copyright (c) 2025-2026 Bahadır Umut İşçimen · PolyForm Noncommercial 1.0.0",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "macOS": {
+      "minimumSystemVersion": "12.0"
+    },
+    "resources": {
+      "../../../runtime/compose.yaml": "runtime/compose.yaml",
+      "../../../runtime/Dockerfile": "runtime/Dockerfile",
+      "../../../runtime/.dockerignore": "runtime/.dockerignore",
+      "../../../runtime/.env.example": "runtime/.env.example",
+      "../../../runtime/README.md": "runtime/README.md",
+      "../../../runtime/config/": "runtime/config/",
+      "../../../runtime/scripts/": "runtime/scripts/",
+      "../../../runtime/status/": "runtime/status/",
+      "../../../runtime/macos/": "runtime/macos/",
+      "../../../packaging/packaged": "runtime/.packaged"
+    },
+    "linux": {
+      "deb": {
+        "files": {
+          "/usr/bin/smt5": "../../target/release/smt5"
+        }
+      }
+    }
+  }
+}
