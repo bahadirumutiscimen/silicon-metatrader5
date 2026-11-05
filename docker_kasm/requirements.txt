@@ -1,3 +1,0 @@
-MetaTrader5
-siliconmetatrader5==1.2.3
-rpyc

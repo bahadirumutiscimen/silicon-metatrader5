@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# Rust / Tauri
+app/target/
+app/crates/smt5-desktop/gen/
+
+# Runtime secrets and local state
+runtime/.env
+
+# Python client build output
+client/build/
+client/dist/
+*.egg-info/
