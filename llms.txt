@@ -1,0 +1,27 @@
+# SiliconMetaTrader5
+
+> SiliconMetaTrader5 runs MetaTrader 5 (MT5) for Python code outside Windows: on macOS (Apple Silicon M1–M4 and Intel), on Linux x86_64, and on your own Linux or Windows servers over SSH. A desktop app installs and supervises the MT5 terminal and a local RPyC bridge; the Python package `siliconmetatrader5` exposes the same functions, parameters and return values as MetaQuotes' official `MetaTrader5` package, so existing MT5 Python code changes only its connection line.
+
+Key facts:
+
+- Python: `pip install siliconmetatrader5`, then `from siliconmetatrader5 import MetaTrader5; mt5 = MetaTrader5(host="127.0.0.1", port=8001); mt5.initialize()`.
+- Same API as the official package: initialize, account_info, terminal_info, symbol_info, symbol_info_tick, copy_rates_from_pos, copy_rates_from, copy_rates_range, copy_ticks_from, order_send, order_check, positions_get, orders_get, history_deals_get, history_orders_get, and the TIMEFRAME_* / ORDER_* constants.
+- macOS: Mac native mode (Wine 11 under Rosetta 2, no VM) or Safe mode (Docker in an x86_64 QEMU VM). Install with `brew install bahadirumutiscimen/tap/siliconmt5`.
+- Linux x86_64: Linux native mode (Wine 11) or Docker; `.deb` and `.AppImage` on GitHub Releases.
+- Servers: Linux (native or Docker) and Windows (native MT5) VPS managed over SSH; an encrypted SSH tunnel connects local code; bots can also run on the server itself, 24/7.
+- Security: every port listens on 127.0.0.1; the app never reads or stores passwords.
+- License: PolyForm Noncommercial 1.0.0. Personal and other noncommercial use is free; commercial use needs a license from the author.
+- Broker time: bar and tick times are on the broker's server clock; use `server_now(mt5)` for ranges that end now.
+- Measured on an Apple M4, v1.2 (Docker/QEMU) → v1.3 (Mac native): startup 55.2 s → 20.3 s, bridge round trip 10.96 ms → 0.8 ms, 10,000 bars 1.10 s → 0.03 s.
+
+## Docs
+
+- [README](https://github.com/bahadirumutiscimen/silicon-metatrader5/blob/main/README.md): overview, install, app tour, Python quick start, FAQ
+- [Python client](https://github.com/bahadirumutiscimen/silicon-metatrader5/blob/main/client/README.md): API, server-time helpers, connection lifecycle, errors
+- [Runtime](https://github.com/bahadirumutiscimen/silicon-metatrader5/blob/main/runtime/README.md): modes, ports, status API, configuration
+- [App and CLI](https://github.com/bahadirumutiscimen/silicon-metatrader5/blob/main/app/README.md): building the desktop app and the `smt5` command line
+
+## Optional
+
+- [Türkçe README](https://github.com/bahadirumutiscimen/silicon-metatrader5/blob/main/README_TR.md)
+- [PyPI package](https://pypi.org/project/siliconmetatrader5/)

@@ -8,6 +8,8 @@ from plotly.subplots import make_subplots
 
 from siliconmetatrader5 import MetaTrader5
 
+from siliconmetatrader5 import server_now  # client >= 1.3.0
+
 
 def to_df(rates):
     if rates is None or len(rates) == 0:
@@ -81,7 +83,7 @@ def main():
         mt5.close()
         return 2
 
-    now = datetime.now()
+    now = server_now(mt5, symbol)   # broker clock, not this computer's
     range_start = now - timedelta(minutes=max(count * 2, 120))
 
     print(f"\nFetching 3 methods for {symbol}, timeframe={timeframe}, count={count}...")
