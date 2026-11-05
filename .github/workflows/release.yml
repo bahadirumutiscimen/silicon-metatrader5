@@ -29,7 +29,7 @@ jobs:
   linux:
     runs-on: ubuntu-22.04          # older glibc → the AppImage runs on more distros
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ env.TAG }}
       - name: version matches the tag
@@ -71,7 +71,7 @@ jobs:
     env:
       TAP_TOKEN: ${{ secrets.TAP_TOKEN }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ env.TAG }}
       - name: render the Homebrew formula
@@ -102,7 +102,7 @@ jobs:
     needs: [linux, formula]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ env.TAG }}
           path: src

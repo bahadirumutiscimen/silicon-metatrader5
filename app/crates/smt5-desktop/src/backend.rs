@@ -611,7 +611,7 @@ pub fn remote_env_update_script(values: &BTreeMap<String, String>) -> Result<Str
         "set -e".to_owned(),
         "E=\"$HOME/siliconmetatrader5/runtime/.env\"".to_owned(),
         "[ -f \"$E\" ]".to_owned(),
-        "set_kv() { k=\"${1%%=*}\"; if grep -q \"^$k=\" \"$E\"; then sed -i \"s|^$k=.*|$1|\" \"$E\"; else printf '%s\\n' \"$1\" >> \"$E\"; fi; }".to_owned(),
+        "set_kv() { k=\"${1%%=*}\"; if grep -q \"^$k=\" \"$E\"; then sed -i.bak \"s|^$k=.*|$1|\" \"$E\" && rm -f \"$E.bak\"; else printf '%s\\n' \"$1\" >> \"$E\"; fi; }".to_owned(),
     ];
     for (k, v) in values {
         let v = v.trim();

@@ -397,7 +397,7 @@ if [ -f "$E" ]; then echo ".env exists (kept)"; exit 0; fi
 cp "{R}/runtime/.env.example" "$E"
 chmod 600 "$E"
 rnd() {{ head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n' | cut -c1-"$1"; }}
-set_kv() {{ k="${{1%%=*}}"; if grep -q "^$k=" "$E"; then sed -i "s|^$k=.*|$1|" "$E"; else printf '%s\n' "$1" >> "$E"; fi; }}
+set_kv() {{ k="${{1%%=*}}"; if grep -q "^$k=" "$E"; then sed -i.bak "s|^$k=.*|$1|" "$E" && rm -f "$E.bak"; else printf '%s\n' "$1" >> "$E"; fi; }}
 set_kv "SMT5_WEB_PASSWORD=$(rnd 18)"
 set_kv "SMT5_API_TOKEN=$(rnd 48)"
 set_kv "SMT5_PROVIDER={p}"
