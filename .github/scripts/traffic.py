@@ -1,70 +1,115 @@
-"""Merge GitHub's 14-day traffic (views, clones) and release download counts into
-.github/stats/traffic.json and write a readable summary to .github/stats/README.md."""
+"""Keep a lasting record of how often SiliconMetaTrader5 is downloaded and visited.
+
+Writes to $STATS_DIR (the `stats` branch, checked out by traffic.yml):
+- traffic.json: daily views and clones (GitHub keeps only 14 days), and a daily
+  snapshot of every release file's download count and the Docker Hub pulls.
+- badge-downloads.json: a shields.io endpoint badge with the total downloads.
+- README.md: a readable summary.
+"""
 import datetime
 import json
 import os
 import pathlib
 import subprocess
+import urllib.request
 
 REPO = os.environ["REPO"]
-OUT = pathlib.Path(".github/stats")
-DATA = OUT / "traffic.json"
+OUT = pathlib.Path(os.environ.get("STATS_DIR", ".github/stats"))
+DOCKERHUB = [r for r in os.environ.get("DOCKERHUB_REPOS", "bahadirumutiscimen/pysiliconwine").split() if r]
+# Downloads that happened somewhere nothing can count any more (set as the
+# DOWNLOADS_BASELINE repository variable); 0 by default.
+BASELINE = int(os.environ.get("DOWNLOADS_BASELINE") or 0)
 
 
 def api(path):
     return json.loads(subprocess.check_output(["gh", "api", "-H", "Accept: application/vnd.github+json", path]))
 
 
+def dockerhub_pulls(repo):
+    req = urllib.request.Request(f"https://hub.docker.com/v2/repositories/{repo}/", headers={"User-Agent": "siliconmt5-stats"})
+    with urllib.request.urlopen(req, timeout=20) as r:
+        return int(json.load(r)["pull_count"])
+
+
+def short(n):
+    for div, unit in ((1_000_000, "M"), (1_000, "k")):
+        if n >= div:
+            return f"{n / div:.1f}".rstrip("0").rstrip(".") + unit
+    return str(n)
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    data = json.loads(DATA.read_text()) if DATA.exists() else {}
-    for key in ("views", "clones", "downloads"):
+    path = OUT / "traffic.json"
+    data = json.loads(path.read_text()) if path.exists() else {}
+    for key in ("views", "clones", "downloads", "dockerhub"):
         data.setdefault(key, {})
-
-    # one entry per day; a later run overwrites the (then complete) earlier value
-    for kind in ("views", "clones"):
-        for day in api(f"repos/{REPO}/traffic/{kind}?per=day")[kind]:
-            data[kind][day["timestamp"][:10]] = {"count": day["count"], "uniques": day["uniques"]}
-
-    snapshot = {}
-    for rel in api(f"repos/{REPO}/releases?per_page=100"):
-        for asset in rel["assets"]:
-            snapshot[f'{rel["tag_name"]}/{asset["name"]}'] = asset["download_count"]
     today = datetime.date.today().isoformat()
-    data["downloads"][today] = snapshot
+
+    try:  # needs TRAFFIC_TOKEN ("Administration: Read-only")
+        for kind in ("views", "clones"):
+            for day in api(f"repos/{REPO}/traffic/{kind}?per=day")[kind]:
+                data[kind][day["timestamp"][:10]] = {"count": day["count"], "uniques": day["uniques"]}
+    except subprocess.CalledProcessError:
+        print("::warning::traffic not readable (TRAFFIC_TOKEN missing or without Administration: Read-only); downloads only")
+
+    data["downloads"][today] = {f'{r["tag_name"]}/{a["name"]}': a["download_count"]
+                                for r in api(f"repos/{REPO}/releases?per_page=100") for a in r["assets"]}
+    pulls = {}
+    for repo in DOCKERHUB:
+        try:
+            pulls[repo] = dockerhub_pulls(repo)
+        except Exception as e:  # keep the last known value
+            print(f"::warning::Docker Hub {repo}: {e}")
+            last = [v[repo] for v in data["dockerhub"].values() if repo in v]
+            if last:
+                pulls[repo] = last[-1]
+    data["dockerhub"][today] = pulls
 
     for key in data:
         data[key] = dict(sorted(data[key].items()))
-    DATA.write_text(json.dumps(data, indent=1) + "\n")
-    write_summary(data, today)
+    path.write_text(json.dumps(data, indent=1) + "\n")
+
+    releases = sum(data["downloads"][today].values())
+    docker = sum(pulls.values())
+    total = releases + docker + BASELINE
+    (OUT / "badge-downloads.json").write_text(json.dumps(
+        {"schemaVersion": 1, "label": "downloads", "message": short(total), "color": "24292f"}) + "\n")
+    write_summary(data, today, releases, docker, total)
 
 
-def write_summary(data, today):
+def write_summary(data, today, releases, docker, total):
     months = {}
     for kind in ("views", "clones"):
         for day, v in data[kind].items():
             m = months.setdefault(day[:7], {"views": 0, "view_uniques": 0, "clones": 0, "clone_uniques": 0})
             m[kind] += v["count"]
             m["view_uniques" if kind == "views" else "clone_uniques"] += v["uniques"]
-    latest = data["downloads"].get(today, {})
     by_release = {}
-    for name, n in latest.items():
+    for name, n in data["downloads"][today].items():
         tag = name.split("/", 1)[0]
         by_release[tag] = by_release.get(tag, 0) + n
 
     lines = [
-        "# Repository statistics",
+        "# SiliconMetaTrader5 statistics",
         "",
-        f"Updated {today} by the `traffic` workflow. GitHub only keeps 14 days of traffic; this keeps all of it.",
-        "Daily unique visitors are added up per month, so one person visiting on two days counts twice.",
+        f"Updated {today} by the `traffic` workflow (daily). GitHub keeps only 14 days of traffic; this keeps all of it.",
         "",
-        "## Release downloads (Homebrew installs, .deb, AppImage, CLI)",
+        "## Downloads",
         "",
-        "| Release | Downloads |",
+        "| Source | Count |",
         "| :-- | --: |",
+        f"| GitHub release files (Homebrew installs, .deb, AppImage, CLI) | {releases} |",
+        f"| Docker Hub pulls ({', '.join(DOCKERHUB)}, 1.x) | {docker} |",
     ]
+    if BASELINE:
+        lines.append(f"| Earlier downloads that can no longer be counted | {BASELINE} |")
+    lines += [f"| **Total (README badge)** | **{total}** |", "",
+              "Python package installs are counted by PyPI: https://pepy.tech/projects/siliconmetatrader5", "",
+              "## Release files", "", "| Release | Downloads |", "| :-- | --: |"]
     lines += [f"| {tag} | {n} |" for tag, n in sorted(by_release.items(), reverse=True)]
-    lines += [f"| **Total** | **{sum(by_release.values())}** |", "", "## Traffic per month", "",
+    lines += ["", "## Traffic per month", "",
+              "Daily unique visitors are added up per month, so one person visiting on two days counts twice.", "",
               "| Month | Views | Daily unique visitors | Clones | Daily unique cloners |", "| :-- | --: | --: | --: | --: |"]
     lines += [f'| {m} | {v["views"]} | {v["view_uniques"]} | {v["clones"]} | {v["clone_uniques"]} |'
               for m, v in sorted(months.items(), reverse=True)]

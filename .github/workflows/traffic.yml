@@ -1,15 +1,18 @@
 name: traffic
 
-# GitHub keeps views and clones for 14 days only. Every Monday this records
-# them, plus the download count of every release file, in
-# .github/stats/traffic.json and a summary in .github/stats/README.md.
+# Daily: records views and clones (GitHub keeps them for 14 days only), the
+# download count of every release file and the Docker Hub pulls on the `stats`
+# branch, and refreshes the README's downloads badge
+# (stats/badge-downloads.json). Summary: README.md on the `stats` branch.
 #
-# Needs the TRAFFIC_TOKEN secret: a fine-grained personal access token for this
-# repository with "Administration: Read-only" (required by the traffic API).
+# Traffic needs the TRAFFIC_TOKEN secret: a fine-grained personal access token
+# for this repository with "Administration: Read-only". Without it only the
+# downloads are recorded. Optional repository variable DOWNLOADS_BASELINE adds
+# a fixed number of earlier downloads to the badge.
 
 on:
   schedule:
-    - cron: "17 6 * * 1"
+    - cron: "17 6 * * *"
   workflow_dispatch:
 
 permissions:
@@ -22,19 +25,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+      - name: check out the stats branch
+        run: |
+          if git ls-remote --exit-code --heads origin stats >/dev/null; then
+            git fetch --depth=1 origin stats
+            git worktree add -B stats st FETCH_HEAD
+          else
+            git worktree add --orphan -b stats st
+          fi
       - name: fetch and merge
         env:
-          GH_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
+          GH_TOKEN: ${{ secrets.TRAFFIC_TOKEN || github.token }}
           REPO: ${{ github.repository }}
-        run: |
-          test -n "$GH_TOKEN" || { echo "::error::TRAFFIC_TOKEN secret is not set"; exit 1; }
-          python3 .github/scripts/traffic.py
-      - name: commit
+          STATS_DIR: st
+          DOWNLOADS_BASELINE: ${{ vars.DOWNLOADS_BASELINE }}
+        run: python3 .github/scripts/traffic.py
+      - name: commit to the stats branch
+        working-directory: st
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .github/stats
+          git add -A .
           if git diff --cached --quiet; then echo "no change"; exit 0; fi
-          git commit -m "stats: traffic $(date -u +%F)"
-          for i in 1 2 3; do git pull --rebase origin main && git push origin HEAD:main && exit 0; sleep 5; done
-          exit 1
+          git commit -m "stats $(date -u +%F)"
+          git push origin HEAD:stats

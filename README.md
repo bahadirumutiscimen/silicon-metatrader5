@@ -15,7 +15,8 @@
 
 <a href="https://github.com/bahadirumutiscimen/silicon-metatrader5/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/bahadirumutiscimen/silicon-metatrader5?style=flat-square&color=155dfc&label=release"></a>
 <a href="https://pypi.org/project/siliconmetatrader5/"><img alt="PyPI" src="https://img.shields.io/pypi/v/siliconmetatrader5?style=flat-square&color=155dfc&label=pypi"></a>
-<a href="https://github.com/bahadirumutiscimen/silicon-metatrader5/releases"><img alt="Release downloads" src="https://img.shields.io/github/downloads/bahadirumutiscimen/silicon-metatrader5/total?style=flat-square&color=24292f&label=downloads"></a>
+<a href="https://github.com/bahadirumutiscimen/silicon-metatrader5/blob/stats/README.md"><img alt="Downloads" src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbahadirumutiscimen%2Fsilicon-metatrader5%2Fstats%2Fbadge-downloads.json&style=flat-square&label=downloads"></a>
+<a href="https://pepy.tech/projects/siliconmetatrader5"><img alt="PyPI downloads" src="https://img.shields.io/pepy/dt/siliconmetatrader5?style=flat-square&color=24292f&label=pip%20installs"></a>
 <a href="https://pypistats.org/packages/siliconmetatrader5"><img alt="PyPI downloads per month" src="https://img.shields.io/pypi/dm/siliconmetatrader5?style=flat-square&color=24292f&label=pip%20installs%2Fmonth"></a>
 <img alt="Python 3.9+" src="https://img.shields.io/badge/python-3.9%2B-24292f?style=flat-square">
 <img alt="macOS · Linux · Windows server" src="https://img.shields.io/badge/runs%20on-macOS%20·%20Linux%20·%20Windows%20server-24292f?style=flat-square">
