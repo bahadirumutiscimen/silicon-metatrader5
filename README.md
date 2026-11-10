@@ -1,23 +1,23 @@
 # SiliconMetaTrader5 statistics
 
-Updated 2026-11-09 by the `traffic` workflow (daily). GitHub keeps only 14 days of traffic; this keeps all of it.
+Updated 2026-11-10 by the `traffic` workflow (daily). GitHub keeps only 14 days of traffic; this keeps all of it.
 
 ## Downloads
 
 | Source | Count |
 | :-- | --: |
-| PyPI `siliconmetatrader5` (pip installs, all time) | 13789 |
-| GitHub release files (Homebrew installs, .deb, AppImage, CLI) | 6 |
+| PyPI `siliconmetatrader5` (pip installs, all time) | 13844 |
+| GitHub release files (Homebrew installs, .deb, AppImage, CLI) | 9 |
 | Docker Hub pulls (bahadirumutiscimen/pysiliconwine, 1.x) | 1769 |
-| **Total (README badge)** | **15564** |
+| **Total (README badge)** | **15622** |
 
-PyPI installs in the last 30 days: 1606 (source: pepy.tech).
+PyPI installs in the last 30 days: 1645 (source: pepy.tech).
 
 ## Release files
 
 | Release | Downloads |
 | :-- | --: |
-| v1.3.0 | 6 |
+| v1.3.0 | 9 |
 
 ## Traffic per month
 
@@ -25,5 +25,5 @@ Daily unique visitors are added up per month, so one person visiting on two days
 
 | Month | Views | Daily unique visitors | Clones | Daily unique cloners |
 | :-- | --: | --: | --: | --: |
-| 2026-11 | 283 | 57 | 308 | 120 |
+| 2026-11 | 315 | 61 | 344 | 141 |
 | 2026-10 | 101 | 69 | 54 | 43 |
