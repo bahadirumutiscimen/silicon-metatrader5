@@ -91,6 +91,10 @@
   "2026-11-13": {
    "count": 7,
    "uniques": 6
+  },
+  "2026-11-14": {
+   "count": 10,
+   "uniques": 5
   }
  },
  "clones": {
@@ -185,6 +189,10 @@
   "2026-11-13": {
    "count": 4,
    "uniques": 4
+  },
+  "2026-11-14": {
+   "count": 15,
+   "uniques": 13
   }
  },
  "downloads": {
@@ -257,6 +265,13 @@
    "v1.3.0/SiliconMetaTrader5_1.3.0_amd64.deb": 0,
    "v1.3.0/siliconmt5.rb": 1,
    "v1.3.0/smt5-1.3.0-linux-x86_64.tar.gz": 2
+  },
+  "2026-11-15": {
+   "v1.3.0/silicon-metatrader5-1.3.0.tar.gz": 20,
+   "v1.3.0/SiliconMetaTrader5_1.3.0_amd64.AppImage": 3,
+   "v1.3.0/SiliconMetaTrader5_1.3.0_amd64.deb": 1,
+   "v1.3.0/siliconmt5.rb": 1,
+   "v1.3.0/smt5-1.3.0-linux-x86_64.tar.gz": 2
   }
  },
  "dockerhub": {
@@ -288,6 +303,9 @@
    "bahadirumutiscimen/pysiliconwine": 1770
   },
   "2026-11-14": {
+   "bahadirumutiscimen/pysiliconwine": 1770
+  },
+  "2026-11-15": {
    "bahadirumutiscimen/pysiliconwine": 1770
   }
  },
@@ -331,6 +349,10 @@
   "2026-11-14": {
    "total": 13982,
    "month": 1709
+  },
+  "2026-11-15": {
+   "total": 14010,
+   "month": 1696
   }
  }
 }
