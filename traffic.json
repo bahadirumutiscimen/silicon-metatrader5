@@ -272,6 +272,13 @@
    "v1.3.0/SiliconMetaTrader5_1.3.0_amd64.deb": 1,
    "v1.3.0/siliconmt5.rb": 1,
    "v1.3.0/smt5-1.3.0-linux-x86_64.tar.gz": 2
+  },
+  "2026-11-16": {
+   "v1.3.0/silicon-metatrader5-1.3.0.tar.gz": 22,
+   "v1.3.0/SiliconMetaTrader5_1.3.0_amd64.AppImage": 3,
+   "v1.3.0/SiliconMetaTrader5_1.3.0_amd64.deb": 1,
+   "v1.3.0/siliconmt5.rb": 1,
+   "v1.3.0/smt5-1.3.0-linux-x86_64.tar.gz": 2
   }
  },
  "dockerhub": {
@@ -307,6 +314,9 @@
   },
   "2026-11-15": {
    "bahadirumutiscimen/pysiliconwine": 1770
+  },
+  "2026-11-16": {
+   "bahadirumutiscimen/pysiliconwine": 1771
   }
  },
  "pypi": {
@@ -353,6 +363,10 @@
   "2026-11-15": {
    "total": 14010,
    "month": 1696
+  },
+  "2026-11-16": {
+   "total": 14045,
+   "month": 1679
   }
  }
 }
